@@ -14,17 +14,19 @@ axios(url).then((res) => {
     const specificElement = linked$(
       '.productname:contains("ACTIVE CLEAN 10L - Koncentrat aktywnego preparatu silnie myjącego")'
     );
-    if (specificElement.lenght > 0) {
+    if (specificElement.length > 0) {
       const parent = specificElement.parent().parent();
       const elementWithPrice = parent.find(".price.f-row");
       const emWithPrice = elementWithPrice.find("em");
       const price = emWithPrice.text();
       console.log(price);
     } else {
-      console.log("there is no that product");
-      // const ulElement = linked$("ul");
-      // const paginator = ulElement.find(".paginator").eq(1);
-      // console.log(paginator);
+      const ulElement = linked$("ul.paginator");
+      const paginator = ulElement.eq(1);
+      const children = paginator.find("li");
+      children.each((index, element) => {
+        console.log($(element).text());
+      });
     }
   });
 });
