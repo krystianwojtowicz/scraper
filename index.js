@@ -29,7 +29,8 @@ axios(url).then((res) => {
     childrenArray.pop();
     const modifiedChildren = linked$(childrenArray);
     const oddElements = modifiedChildren.filter((index) => index % 2 === 0);
-    oddElements.each((index, element) => {
+    const trimmedElements = oddElements.slice(1);
+    trimmedElements.each((index, element) => {
       console.log(linked$(element).text());
     });
     // }
