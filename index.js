@@ -35,7 +35,6 @@ axios(url).then((res) => {
       secondPageLink = secondPageLink.substring(1);
       secondPageLink = secondPageLink.slice(0, -1);
       let index = 2;
-      console.log(secondPageLink);
       const searching = (index) => {
         axios(url + secondPageLink + index).then((res) => {
           const secondPageHTML = res.data;
@@ -45,8 +44,12 @@ axios(url).then((res) => {
           );
           if (specificElement.length > 0) console.log("product was found");
           else {
-            index++;
-            searching(index);
+            if (index <= trimmedElements.length) {
+              index++;
+              searching(index);
+            } else {
+              console.log("product was not found");
+            }
           }
         });
       };
