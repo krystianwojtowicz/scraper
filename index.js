@@ -1,6 +1,10 @@
 const axios = require("axios");
 const cheerio = require("cheerio");
 const url = "https://ecoshine.sklep.pl/";
+const express = require("express");
+const PORT = 8000;
+let productNames = [];
+const app = express();
 
 function searchSpecificElement(page, selector, keyword) {
   const specificElements = page(selector).filter((_, element) => {
@@ -28,7 +32,6 @@ function processElements(specificElements, page, index, productNames) {
 }
 
 axios(url).then((res) => {
-  let productNames = [];
   const html = res.data;
   const $ = cheerio.load(html);
   const elementWithTitle = $('a[title="CHEMIA OBIEKTOWA"]');
@@ -96,3 +99,15 @@ axios(url).then((res) => {
     searching(index);
   });
 });
+
+app.get("/", (req, res) => {
+  // Handle the request for the root URL ("/") here
+  // You can perform your scraping logic and send the response
+  // axios(url).then((response) => {
+  //   // Handle the response and send the appropriate data
+  //   res.send("Hello, world!"); // Example response, you can replace this with your own logic
+  // });
+  res.send(productNames);
+});
+
+app.listen(PORT);
