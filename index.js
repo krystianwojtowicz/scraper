@@ -23,21 +23,25 @@ axios(url).then((res) => {
     const linked$ = cheerio.load(linkedHTML);
     let searchKeyword = "disher";
     searchKeyword = searchKeyword.toLowerCase(searchKeyword);
-    const specificElement = searchSpecificElement(
+    const specificElements = searchSpecificElement(
       linked$,
       ".productname",
       searchKeyword
     );
-    if (specificElement.length > 0) {
-      const parent = specificElement.parent().parent();
+    if (specificElements.length > 0) {
+      const parent = specificElements.parent().parent();
       const elementWithPrice = parent.find(".price.f-row");
       const emWithPrice = elementWithPrice.find("em");
       const price = emWithPrice.text();
       //   console.log(price);
       //   console.log(specificElement);
-      productNames = specificElement
-        .map((_, element) => linked$(element).text())
-        .get();
+      specificElements.each((_, element) => {
+        const productName = linked$(element).text();
+        productNames.push({
+          name: productName,
+          page: 1,
+        });
+      });
     }
     const ulElement = linked$("ul.paginator");
     const paginator = ulElement.eq(1);
@@ -49,24 +53,28 @@ axios(url).then((res) => {
     const oddElements = modifiedChildren.filter((index) => index % 2 === 0);
     const trimmedElements = oddElements.slice(1);
 
-    let secondPageLink = trimmedElements.eq(0).find("a").attr("href");
-    secondPageLink = secondPageLink.substring(1);
-    secondPageLink = secondPageLink.slice(0, -1);
+    let nextPageLink = trimmedElements.eq(0).find("a").attr("href");
+    nextPageLink = nextPageLink.substring(1);
+    nextPageLink = nextPageLink.slice(0, -1);
     let index = 2;
 
     const searching = (index) => {
-      axios(url + secondPageLink + index).then((res) => {
-        const secondPageHTML = res.data;
-        const secondPage$ = cheerio.load(secondPageHTML);
+      axios(url + nextPageLink + index).then((res) => {
+        const nextPageHTML = res.data;
+        const nextPage$ = cheerio.load(nextPageHTML);
         const specificElements = searchSpecificElement(
-          secondPage$,
+          nextPage$,
           ".productname",
           searchKeyword
         );
         if (specificElements.length > 0) {
-          productNames.push(
-            ...specificElements.map((_, element) => secondPage$(element).text())
-          );
+          specificElements.each((_, element) => {
+            const productName = nextPage$(element).text();
+            productNames.push({
+              name: productName,
+              page: index,
+            });
+          });
         }
         if (index <= trimmedElements.length) {
           index++;
