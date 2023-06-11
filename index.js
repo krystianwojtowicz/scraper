@@ -84,9 +84,17 @@ axios(url).then((res) => {
           index++;
           searching(index);
         } else {
-          productNames
-            ? console.log(productNames)
-            : console.log("product not found");
+          if (productNames.length > 0) {
+            productNames.sort((a, b) => {
+              const priceA = parseFloat(a.price.replace(/[^0-9.-]+/g, ""));
+              const priceB = parseFloat(b.price.replace(/[^0-9.-]+/g, ""));
+              return priceA - priceB;
+            });
+
+            console.log(productNames);
+          } else {
+            console.log("Product not found");
+          }
         }
       });
     };
