@@ -11,6 +11,22 @@ function searchSpecificElement(page, selector, keyword) {
   return specificElements;
 }
 
+function processElements(specificElements, page, index, productNames) {
+  specificElements.each((_, element) => {
+    const parent = page(element).parent().parent();
+    const elementWithPrice = parent.find(".price.f-row");
+    const emWithPrice = elementWithPrice.find("em");
+    const price = emWithPrice.text();
+    const productName = page(element).text();
+
+    productNames.push({
+      name: productName,
+      page: index,
+      price: price,
+    });
+  });
+}
+
 axios(url).then((res) => {
   let productNames = [];
   const html = res.data;
@@ -29,18 +45,7 @@ axios(url).then((res) => {
       searchKeyword
     );
     if (specificElements.length > 0) {
-      specificElements.each((_, element) => {
-        const parent = linked$(element).parent().parent();
-        const elementWithPrice = parent.find(".price.f-row");
-        const emWithPrice = elementWithPrice.find("em");
-        const price = emWithPrice.text();
-        const productName = linked$(element).text();
-        productNames.push({
-          name: productName,
-          page: 1,
-          price: price,
-        });
-      });
+      processElements(specificElements, linked$, 1, productNames);
     }
     const ulElement = linked$("ul.paginator");
     const paginator = ulElement.eq(1);
@@ -67,18 +72,7 @@ axios(url).then((res) => {
           searchKeyword
         );
         if (specificElements.length > 0) {
-          specificElements.each((_, element) => {
-            const parent = nextPage$(element).parent().parent();
-            const elementWithPrice = parent.find(".price.f-row");
-            const emWithPrice = elementWithPrice.find("em");
-            const price = emWithPrice.text();
-            const productName = nextPage$(element).text();
-            productNames.push({
-              name: productName,
-              page: index,
-              price: price,
-            });
-          });
+          processElements(specificElements, nextPage$, index, productNames);
         }
         if (index <= trimmedElements.length) {
           index++;
