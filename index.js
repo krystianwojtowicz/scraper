@@ -29,17 +29,16 @@ axios(url).then((res) => {
       searchKeyword
     );
     if (specificElements.length > 0) {
-      const parent = specificElements.parent().parent();
-      const elementWithPrice = parent.find(".price.f-row");
-      const emWithPrice = elementWithPrice.find("em");
-      const price = emWithPrice.text();
-      //   console.log(price);
-      //   console.log(specificElement);
       specificElements.each((_, element) => {
+        const parent = linked$(element).parent().parent();
+        const elementWithPrice = parent.find(".price.f-row");
+        const emWithPrice = elementWithPrice.find("em");
+        const price = emWithPrice.text();
         const productName = linked$(element).text();
         productNames.push({
           name: productName,
           page: 1,
+          price: price,
         });
       });
     }
@@ -69,10 +68,15 @@ axios(url).then((res) => {
         );
         if (specificElements.length > 0) {
           specificElements.each((_, element) => {
+            const parent = nextPage$(element).parent().parent();
+            const elementWithPrice = parent.find(".price.f-row");
+            const emWithPrice = elementWithPrice.find("em");
+            const price = emWithPrice.text();
             const productName = nextPage$(element).text();
             productNames.push({
               name: productName,
               page: index,
+              price: price,
             });
           });
         }
